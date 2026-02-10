@@ -485,16 +485,16 @@
             <button class="choice-btn" type="button" data-correct="false" data-message="close enough...">
               Thursday
             </button>
-            <button class="choice-btn" type="button" data-correct="true" data-message="">
-              Friday
-            </button>
             <button
               class="choice-btn"
               type="button"
-              data-correct="false"
-              data-message="why would you think so??....."
+              data-correct="true"
+              data-message=""
             >
               Saturday
+            </button>
+            <button class="choice-btn" type="button" data-correct="false" data-message="why would you think so??.....">
+              Friday
             </button>
           </div>
           <div class="feedback" id="date-feedback"></div>
@@ -662,7 +662,7 @@
           const message = button.dataset.message || "";
 
           if (isCorrect) {
-            dateFeedback.textContent = "ITS FRIDAYY!YYY!Y!Y!!!!";
+            dateFeedback.textContent = "IT's SATURDAYYYYYYY!!!!!";
             button.classList.add("correct-flash");
             setTimeout(() => {
               button.classList.remove("correct-flash");
