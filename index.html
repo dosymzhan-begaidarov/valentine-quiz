@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Be My Valentine?</title>
+    <style>
+      :root {
+        --pink-1: #ffb6d5;
+        --pink-2: #ff79b0;
+        --pink-3: #ff4f9a;
+        --pink-4: #ffd6e8;
+        --glow: 0 0 12px rgba(255, 121, 176, 0.7), 0 0 24px rgba(255, 79, 154, 0.5);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        font-family: "Comic Sans MS", "Comic Sans", "Chalkboard SE", "Marker Felt", cursive;
+        color: #5b1231;
+        background:
+          radial-gradient(1200px 800px at 20% 10%, rgba(255, 255, 255, 0.65), transparent 55%),
+          radial-gradient(900px 700px at 80% 0%, rgba(255, 255, 255, 0.5), transparent 60%),
+          linear-gradient(135deg, var(--pink-1), var(--pink-2));
+        overflow: hidden;
+      }
+
+      .sparkle-field {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .sparkle {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.85);
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.9), 0 0 18px rgba(255, 255, 255, 0.8);
+        animation: twinkle 3s ease-in-out infinite;
+      }
+
+      @keyframes twinkle {
+        0%,
+        100% {
+          transform: scale(0.6);
+          opacity: 0.5;
+        }
+        50% {
+          transform: scale(1.3);
+          opacity: 1;
+        }
+      }
+
+      .card {
+        position: relative;
+        z-index: 1;
+        background: rgba(255, 255, 255, 0.8);
+        border: 3px solid var(--pink-3);
+        border-radius: 24px;
+        padding: 28px 36px 32px;
+        text-align: center;
+        box-shadow: var(--glow);
+        max-width: 520px;
+        width: min(92vw, 520px);
+        backdrop-filter: blur(6px);
+        min-height: 520px;
+      }
+
+      h1 {
+        margin: 0 0 16px;
+        font-size: clamp(28px, 4vw, 40px);
+        text-shadow: 0 0 8px rgba(255, 79, 154, 0.5);
+      }
+
+      p {
+        margin: 0 0 18px;
+        font-size: 18px;
+      }
+
+      .gif-wrap {
+        margin: 16px auto 20px;
+        width: min(320px, 80vw);
+        border-radius: 18px;
+        overflow: hidden;
+        border: 3px solid var(--pink-3);
+        box-shadow: var(--glow);
+        pointer-events: none;
+      }
+
+      .gif-wrap.hidden {
+        display: none;
+      }
+
+      .gif-wrap img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      .buttons {
+        display: flex;
+        justify-content: center;
+        gap: 18px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+      }
+
+      button {
+        border: none;
+        padding: 12px 26px;
+        font-size: 20px;
+        border-radius: 999px;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        font-family: inherit;
+      }
+
+      #yes-btn {
+        background: var(--pink-3);
+        color: white;
+        box-shadow: var(--glow);
+        transform: scale(var(--yes-scale, 1));
+      }
+
+      #yes-btn:hover {
+        transform: scale(calc(var(--yes-scale, 1) * 1.08));
+      }
+
+      #yes-btn.full {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+        z-index: 5;
+        transform: scale(1);
+      }
+
+      #no-btn {
+        background: #fff;
+        color: var(--pink-3);
+        border: 2px solid var(--pink-3);
+        position: relative;
+      }
+
+      #no-btn {
+        transform: scale(var(--no-scale, 1)) rotate(var(--no-rot, 0deg));
+      }
+
+      #no-btn.hidden {
+        opacity: 0;
+        pointer-events: none;
+        transform: scale(0.05);
+      }
+
+      .message {
+        margin-top: 16px;
+        font-size: 20px;
+        color: #b40f56;
+        min-height: 24px;
+      }
+
+      #final-message {
+        position: relative;
+        z-index: 6;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+      }
+
+      body.yes-full #final-message {
+        position: fixed;
+        left: 50%;
+        top: 12%;
+        transform: translateX(-50%);
+        width: min(90vw, 520px);
+      }
+
+      .feedback {
+        margin-top: 14px;
+        font-size: 18px;
+        color: #b40f56;
+        min-height: 24px;
+      }
+
+      .step {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transform: translateY(10px);
+        pointer-events: none;
+        transition: opacity 0.35s ease, transform 0.35s ease;
+      }
+
+      .step.active {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+
+      .step .content {
+        min-height: 360px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding-bottom: 8px;
+      }
+
+      .nav-row {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 16px;
+        flex-wrap: wrap;
+        position: relative;
+        z-index: 2;
+      }
+
+      .nav-btn {
+        background: #fff;
+        color: var(--pink-3);
+        border: 2px dashed var(--pink-3);
+        padding: 8px 18px;
+        font-size: 16px;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+
+      .music-toggle {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        z-index: 10;
+        background: #fff;
+        color: var(--pink-3);
+        border: 2px solid var(--pink-3);
+        border-radius: 999px;
+        padding: 8px 14px;
+        font-size: 14px;
+        cursor: pointer;
+        box-shadow: var(--glow);
+      }
+
+      .music-embed {
+        position: fixed;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+        left: -10px;
+        top: -10px;
+      }
+
+      .image-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+        gap: 12px;
+        margin-top: 12px;
+      }
+
+      .image-option {
+        padding: 0;
+        border: 3px solid var(--pink-3);
+        border-radius: 18px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: var(--glow);
+      }
+
+      .image-option img {
+        width: 100%;
+        height: 140px;
+        object-fit: cover;
+        display: block;
+      }
+
+      .heart {
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        background: var(--pink-3);
+        transform: rotate(45deg);
+        animation: floatUp 5s linear infinite;
+        opacity: 0.8;
+      }
+
+      .heart::before,
+      .heart::after {
+        content: "";
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        background: var(--pink-3);
+        border-radius: 50%;
+      }
+
+      .heart::before {
+        left: -12px;
+        top: 0;
+      }
+
+      .heart::after {
+        top: -12px;
+        left: 0;
+      }
+
+      @keyframes floatUp {
+        0% {
+          transform: translateY(0) rotate(45deg);
+          opacity: 0.8;
+        }
+        100% {
+          transform: translateY(-120vh) rotate(45deg);
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sparkle-field" aria-hidden="true"></div>
+    <button class="music-toggle" id="music-toggle" type="button">Play music</button>
+    <iframe
+      class="music-embed"
+      id="music-embed"
+      title="Background music"
+      allow="autoplay"
+      src="https://www.youtube.com/embed/vZ3SmVpFSLQ?list=PLT3GBg-lVq0C7u_Vd3G4PYzBgb2DI9PdD&autoplay=0&loop=1&playlist=vZ3SmVpFSLQ"
+    ></iframe>
+    <div class="card">
+      <div class="step active" data-step="1">
+        <div class="content">
+          <h1>Pick your name:</h1>
+          <div class="buttons">
+            <button class="choice-btn" type="button" data-next="2">Tropipi</button>
+            <button class="choice-btn" type="button" data-next="2">Kichikoni</button>
+            <button class="choice-btn" type="button" data-next="2">Mipipipi</button>
+            <button class="choice-btn" type="button" data-next="2">Pipikoni</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-step="2">
+        <div class="content">
+          <h1>Pick which Korean dish are you usually associated the most</h1>
+          <div class="image-grid">
+            <button class="image-option" type="button" data-correct="false" aria-label="Tteokbokki">
+              <img
+                src="https://asianinspirations.com.au/wp-content/uploads/2021/09/R00397-Hot-Spicy-Tteokbokki.jpg"
+                alt="Tteokbokki"
+              />
+            </button>
+            <button class="image-option" type="button" data-correct="false" aria-label="Samgyupsal">
+              <img
+                src="https://hallyu.be/wp-content/uploads/2024/02/samgyupsal-thumbnail.jpg"
+                alt="Samgyupsal"
+              />
+            </button>
+            <button class="image-option" type="button" data-correct="true" aria-label="Bulgogi">
+              <img
+                src="https://assets.bonappetit.com/photos/57acd741f1c801a1038bc801/2:3/w_2406,h_3609,c_limit/basic-bulgogi.jpg"
+                alt="Bulgogi"
+              />
+            </button>
+            <button class="image-option" type="button" data-correct="false" aria-label="Kimchi stew">
+              <img
+                src="https://static.toiimg.com/thumb/82085026.cms?resizemode=4&width=1200"
+                alt="Kimchi stew"
+              />
+            </button>
+          </div>
+          <div class="feedback" id="dish-feedback"></div>
+        </div>
+        <div class="nav-row">
+          <button class="nav-btn" type="button" data-back="1">Go back</button>
+        </div>
+      </div>
+
+      <div class="step" data-step="3">
+        <div class="content">
+          <h1>When are you coming to Almaty?</h1>
+          <div class="buttons">
+            <button class="choice-btn" type="button" data-correct="false" data-message="I wish......">
+              Wednesday
+            </button>
+            <button class="choice-btn" type="button" data-correct="false" data-message="close enough...">
+              Thursday
+            </button>
+            <button class="choice-btn" type="button" data-correct="true" data-message="">
+              Friday
+            </button>
+            <button
+              class="choice-btn"
+              type="button"
+              data-correct="false"
+              data-message="why would you think so??....."
+            >
+              Saturday
+            </button>
+          </div>
+          <div class="feedback" id="date-feedback"></div>
+        </div>
+        <div class="nav-row">
+          <button class="nav-btn" type="button" data-back="2">Go back</button>
+        </div>
+      </div>
+
+      <div class="step" data-step="4">
+        <div class="content">
+          <p>and the last question is.....</p>
+          <h1>will you then be my valentine?</h1>
+          <div class="gif-wrap">
+            <img
+              src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5bzk2ZGhsZHJ2dXZ4N25pcTVwcWYydDR2cDhraWZ4ZnJydG8weSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/tXJL4iMEuOccrrtEKC/giphy.gif"
+              alt="Cute excited gif"
+            />
+          </div>
+          <div class="buttons" id="final-buttons">
+            <button id="yes-btn" type="button">yes</button>
+            <button id="no-btn" type="button">no</button>
+          </div>
+          <div class="message" id="final-message"></div>
+        </div>
+        <div class="nav-row">
+          <button class="nav-btn" type="button" data-back="3">Go back</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const sparkles = document.querySelector(".sparkle-field");
+      const sparkleCount = 60;
+      for (let i = 0; i < sparkleCount; i += 1) {
+        const s = document.createElement("span");
+        s.className = "sparkle";
+        s.style.left = `${Math.random() * 100}%`;
+        s.style.top = `${Math.random() * 100}%`;
+        s.style.animationDelay = `${Math.random() * 3}s`;
+        s.style.opacity = `${0.4 + Math.random() * 0.6}`;
+        sparkles.appendChild(s);
+      }
+
+      const heartsTotal = 14;
+      for (let i = 0; i < heartsTotal; i += 1) {
+        const h = document.createElement("div");
+        h.className = "heart";
+        h.style.left = `${Math.random() * 100}%`;
+        h.style.bottom = `${-20 - Math.random() * 60}px`;
+        h.style.animationDelay = `${Math.random() * 4}s`;
+        h.style.animationDuration = `${4 + Math.random() * 4}s`;
+        document.body.appendChild(h);
+      }
+
+      const steps = Array.from(document.querySelectorAll(".step"));
+      const dishFeedback = document.getElementById("dish-feedback");
+      const dateFeedback = document.getElementById("date-feedback");
+      const finalMessage = document.getElementById("final-message");
+      const noBtn = document.getElementById("no-btn");
+      const yesBtn = document.getElementById("yes-btn");
+      const musicToggle = document.getElementById("music-toggle");
+      const musicEmbed = document.getElementById("music-embed");
+      let musicPlaying = false;
+
+      let yesScale = 1;
+      let noScale = 1;
+
+      const updateSizes = () => {
+        yesBtn.style.setProperty("--yes-scale", yesScale);
+        noBtn.style.setProperty("--no-scale", noScale);
+      };
+
+      const resetFinalButtons = () => {
+        yesScale = 1;
+        noScale = 1;
+        yesBtn.classList.remove("full");
+        noBtn.classList.remove("hidden");
+        document.body.classList.remove("yes-full");
+        updateSizes();
+      };
+
+      const computeFullScale = () => {
+        const rect = yesBtn.getBoundingClientRect();
+        const scaleX = window.innerWidth / rect.width;
+        const scaleY = window.innerHeight / rect.height;
+        return Math.max(scaleX, scaleY) * 1.05;
+      };
+
+      const showStep = (stepNumber) => {
+        steps.forEach((step) => {
+          step.classList.toggle("active", step.dataset.step === String(stepNumber));
+        });
+
+        if (stepNumber !== 4) {
+          resetFinalButtons();
+        }
+
+        if (stepNumber === 2) {
+          dishFeedback.textContent = "";
+        }
+
+        if (stepNumber === 3) {
+          dateFeedback.textContent = "";
+        }
+
+        if (stepNumber === 4) {
+          finalMessage.textContent = "";
+          resetFinalButtons();
+        }
+      };
+
+      document.querySelectorAll(".choice-btn[data-next]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const next = Number(button.dataset.next);
+          showStep(next);
+        });
+      });
+
+      document.querySelectorAll("[data-back]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const back = Number(button.dataset.back);
+          showStep(back);
+        });
+      });
+
+      document.querySelectorAll(".image-option").forEach((button) => {
+        button.addEventListener("click", () => {
+          const isCorrect = button.dataset.correct === "true";
+          if (isCorrect) {
+            showStep(3);
+            return;
+          }
+
+          dishFeedback.textContent =
+            "u sure? maybe you should try again – AND REMEMBER WHO YOU ARE????!!!! MHHHMHHHMMMMM";
+        });
+      });
+
+      document.querySelectorAll(".choice-btn[data-correct]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const isCorrect = button.dataset.correct === "true";
+          const message = button.dataset.message || "";
+
+          if (isCorrect) {
+            showStep(4);
+          } else {
+            dateFeedback.textContent = message;
+          }
+        });
+      });
+
+      noBtn.addEventListener("click", () => {
+        const fullScale = computeFullScale();
+        yesScale = Math.min(fullScale, yesScale + 0.45);
+        noScale = Math.max(0, noScale - 0.2);
+        updateSizes();
+
+        if (noScale <= 0.08) {
+          noBtn.classList.add("hidden");
+        }
+
+        if (yesScale >= fullScale - 0.05) {
+          yesBtn.classList.add("full");
+          document.body.classList.add("yes-full");
+        }
+      });
+
+      yesBtn.addEventListener("click", () => {
+        finalMessage.textContent = "Yay!! I knew it.";
+      });
+
+      const startMusic = () => {
+        if (musicPlaying) {
+          return;
+        }
+        const src = musicEmbed.getAttribute("src");
+        if (src && src.includes("autoplay=0")) {
+          musicEmbed.setAttribute("src", src.replace("autoplay=0", "autoplay=1"));
+        } else if (src && !src.includes("autoplay=1")) {
+          musicEmbed.setAttribute("src", `${src}&autoplay=1`);
+        }
+        musicPlaying = true;
+        musicToggle.textContent = "Music on";
+      };
+
+      musicToggle.addEventListener("click", () => {
+        startMusic();
+      });
+
+      document.addEventListener("click", (event) => {
+        if (event.target !== musicToggle) {
+          startMusic();
+        }
+      });
+    </script>
+  </body>
+</html>
