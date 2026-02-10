@@ -110,6 +110,15 @@
         height: auto;
       }
 
+      .gif-wrap.big {
+        width: min(420px, 86vw);
+      }
+
+      .gif-wrap.big img {
+        height: min(38vh, 260px);
+        object-fit: contain;
+      }
+
       .buttons {
         display: flex;
         justify-content: center;
@@ -265,12 +274,13 @@
 
       .confetti {
         position: fixed;
-        width: 8px;
-        height: 14px;
-        border-radius: 3px;
+        width: 14px;
+        height: 22px;
+        border-radius: 4px;
         top: 50%;
-        opacity: 0.9;
+        opacity: 0.95;
         z-index: 9;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
       }
 
       .confetti.left {
@@ -491,7 +501,7 @@
         <div class="content">
           <p>and the last question is.....</p>
           <h1>will you then be my valentine?</h1>
-          <div class="gif-wrap">
+          <div class="gif-wrap big">
             <img
               src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5bzk2ZGhsZHJ2dXZ4N25pcTVwcWYydDR2cDhraWZ4ZnJydG8weSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/tXJL4iMEuOccrrtEKC/giphy.gif"
               alt="Cute excited gif"
@@ -601,7 +611,7 @@
         button.addEventListener("click", () => {
           selectedName = button.textContent.trim();
           if (dishTitle) {
-            dishTitle.textContent = `Ok ${selectedName}, then tell me Pick which Korean dish are you usually associated the most?`;
+            dishTitle.textContent = `Ok ${selectedName}, then tell me which Korean dish are you usually associated the most?`;
           }
           const next = Number(button.dataset.next);
           showStep(next);
@@ -668,16 +678,25 @@
         if (confettiLoop) {
           return;
         }
-        const colors = ["#ff4f9a", "#ff79b0", "#ffd166", "#ffffff", "#ffb6d5"];
+        const colors = [
+          "#ff4f9a",
+          "#ff79b0",
+          "#ffd166",
+          "#ffffff",
+          "#ffb6d5",
+          "#ff9f1c",
+          "#ffe66d",
+          "#caffbf",
+        ];
         const burst = () => {
-          const count = 90;
+          const count = 220;
           for (let i = 0; i < count; i += 1) {
             const piece = document.createElement("div");
             const side = i % 2 === 0 ? "left" : "right";
             piece.className = `confetti ${side}`;
             piece.style.background = colors[i % colors.length];
-            piece.style.width = `${6 + Math.random() * 6}px`;
-            piece.style.height = `${10 + Math.random() * 10}px`;
+            piece.style.width = `${10 + Math.random() * 12}px`;
+            piece.style.height = `${16 + Math.random() * 16}px`;
             piece.style.top = `${20 + Math.random() * 60}vh`;
             piece.style.transform = `rotate(${Math.random() * 360}deg)`;
             document.body.appendChild(piece);
@@ -685,7 +704,7 @@
           }
         };
         burst();
-        confettiLoop = setInterval(burst, 900);
+        confettiLoop = setInterval(burst, 700);
       };
 
       const unmuteMusic = () => {
