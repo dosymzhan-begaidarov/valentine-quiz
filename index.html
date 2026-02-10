@@ -257,13 +257,25 @@
         color: var(--pink-3);
         border: 2px solid var(--pink-3);
         border-radius: 999px;
-        padding: 8px 14px;
-        font-size: 14px;
+        padding: 14px 24px;
+        font-size: 18px;
         cursor: pointer;
         box-shadow: var(--glow);
       }
 
       .music-toggle.hidden {
+        display: none;
+      }
+
+      .music-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(8px);
+        z-index: 9;
+      }
+
+      .music-backdrop.hidden {
         display: none;
       }
 
@@ -338,6 +350,11 @@
         box-shadow: 0 0 12px rgba(55, 214, 122, 0.7);
       }
 
+      .incorrect-flash {
+        outline: 3px solid #ff4d4d;
+        box-shadow: 0 0 12px rgba(255, 77, 77, 0.7);
+      }
+
       .heart {
         position: absolute;
         width: 24px;
@@ -382,6 +399,7 @@
   </head>
   <body>
     <div class="sparkle-field" aria-hidden="true"></div>
+    <div class="music-backdrop" id="music-backdrop" aria-hidden="true"></div>
     <button class="music-toggle" id="music-toggle" type="button">Tap to play music</button>
     <iframe
       class="music-embed"
@@ -541,6 +559,7 @@
       const yesBtn = document.getElementById("yes-btn");
       const musicToggle = document.getElementById("music-toggle");
       const musicEmbed = document.getElementById("music-embed");
+      const musicBackdrop = document.getElementById("music-backdrop");
       let musicLoaded = false;
       let musicUnmuted = false;
       let selectedName = "";
@@ -630,6 +649,10 @@
 
           const paraphrase = button.dataset.message || "";
           dishFeedback.textContent = paraphrase;
+          button.classList.add("incorrect-flash");
+          setTimeout(() => {
+            button.classList.remove("incorrect-flash");
+          }, 500);
         });
       });
 
@@ -647,6 +670,10 @@
             }, 500);
           } else {
             dateFeedback.textContent = message;
+            button.classList.add("incorrect-flash");
+            setTimeout(() => {
+              button.classList.remove("incorrect-flash");
+            }, 500);
           }
         });
       });
@@ -738,6 +765,9 @@
         musicUnmuted = true;
         musicToggle.textContent = "Music on";
         musicToggle.classList.add("hidden");
+        if (musicBackdrop) {
+          musicBackdrop.classList.add("hidden");
+        }
       };
 
       window.addEventListener("load", () => {
