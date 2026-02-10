@@ -372,13 +372,13 @@
   </head>
   <body>
     <div class="sparkle-field" aria-hidden="true"></div>
-    <button class="music-toggle" id="music-toggle" type="button">Unmute music</button>
+    <button class="music-toggle" id="music-toggle" type="button">Tap to play music</button>
     <iframe
       class="music-embed"
       id="music-embed"
       title="Background music"
       allow="autoplay"
-      src="https://www.youtube.com/embed/_QdMquVFNM0?list=RD_QdMquVFNM0&start=13&autoplay=1&loop=1&playlist=_QdMquVFNM0&mute=1&playsinline=1"
+      data-src="https://www.youtube.com/embed/_QdMquVFNM0?list=RD_QdMquVFNM0&start=13&autoplay=1&loop=1&playlist=_QdMquVFNM0&mute=1&playsinline=1"
     ></iframe>
     <div class="card">
       <div class="step active" data-step="1">
@@ -531,6 +531,7 @@
       const yesBtn = document.getElementById("yes-btn");
       const musicToggle = document.getElementById("music-toggle");
       const musicEmbed = document.getElementById("music-embed");
+      let musicLoaded = false;
       let musicUnmuted = false;
       let selectedName = "";
       let confettiLoop = null;
@@ -696,25 +697,41 @@
       };
 
 
+      const loadMusic = () => {
+        if (musicLoaded) {
+          return;
+        }
+        const dataSrc = musicEmbed.getAttribute("data-src") || "";
+        if (dataSrc) {
+          musicEmbed.setAttribute("src", dataSrc);
+          musicLoaded = true;
+        }
+      };
+
       const unmuteMusic = () => {
         if (musicUnmuted) {
           return;
         }
         const src = musicEmbed.getAttribute("src") || "";
-        if (src.includes("mute=1")) {
-          musicEmbed.setAttribute("src", src.replace("mute=1", "mute=0"));
-        } else if (!src.includes("mute=0")) {
-          musicEmbed.setAttribute("src", `${src}&mute=0`);
+        if (src) {
+          const next = src.includes("mute=1") ? src.replace("mute=1", "mute=0") : `${src}&mute=0`;
+          musicEmbed.setAttribute("src", next);
         }
         musicUnmuted = true;
         musicToggle.textContent = "Music on";
       };
 
+      window.addEventListener("load", () => {
+        loadMusic();
+      });
+
       musicToggle.addEventListener("click", () => {
+        loadMusic();
         unmuteMusic();
       });
 
       document.addEventListener("click", () => {
+        loadMusic();
         unmuteMusic();
       });
     </script>
